@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Compare Web Demo</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_v2.css') }}">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">AI Face Risk Console</p>
+        <h1>可信核验与黑名单筛查工作台</h1>
+        <p class="lead">面向企业身份核验、风控筛查与黑名单命中场景。页面保留真实上传与即时结果反馈，服务侧保持标准化 API 结构，便于与你们的 Java 主服务集成、编排和落库。</p>
+        <div class="hero-pills">
+          <span>企业级可信</span>
+          <span>真实上传链路</span>
+          <span>Java 易接入</span>
+        </div>
+        <div class="hero-actions">
+          <button class="ghost-button" type="button" id="fill-samples">填充示例说明</button>
+          <a class="solid-link" href="/api/v1/meta" target="_blank" rel="noreferrer">查看服务元信息</a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="halo halo-a"></div>
+        <div class="halo halo-b"></div>
+        <div class="hero-grid"></div>
+
+        <div class="glass-card stack-primary">
+          <div class="scan-label">身份扫描</div>
+          <div class="portrait-block">
+            <div class="portrait-frame">
+              <div class="portrait-ring"></div>
+              <div class="scan-line"></div>
+            </div>
+            <div class="portrait-copy">
+              <strong>多层身份核验</strong>
+              <span>人脸检测 · 特征提取 · 结果决策</span>
+            </div>
+          </div>
+          <div class="chip-row">
+            <span class="status-chip ok">核验通过</span>
+            <span class="status-chip warn">黑名单筛查</span>
+          </div>
+        </div>
+
+        <div class="glass-card stack-secondary stack-top">
+          <span>Service</span>
+          <strong>{{ service_name }}</strong>
+          <small>{{ service_version }}</small>
+        </div>
+
+        <div class="glass-card stack-secondary stack-bottom">
+          <span>运行环境</span>
+          <strong>{{ service_env }}</strong>
+          <small>已适配 Java 侧集成</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="trust-strip">
+      <article class="trust-card">
+        <div class="icon-box">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l7 3v6c0 5-3.4 9.3-7 11-3.6-1.7-7-6-7-11V5l7-3zm0 5.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7zm0 8.5c-2.3 0-4.4.9-5.8 2.4.9 1.1 1.9 2 2.9 2.7 1-.8 1.9-1.3 2.9-1.3s1.9.5 2.9 1.3c1-.7 2-1.6 2.9-2.7-1.4-1.5-3.5-2.4-5.8-2.4z"/></svg>
+        </div>
+        <div>
+          <span>Biometric Safety</span>
+          <strong>身份核验与风险筛查统一工作台</strong>
+        </div>
+      </article>
+      <article class="trust-card">
+        <div class="icon-box">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v3H3V5zm0 5h18v3H3v-3zm0 5h12v3H3v-3zm14.5-.5l1.8 1.8 3.7-4 1.5 1.4-5.2 5.6-3.3-3.2 1.5-1.6z"/></svg>
+        </div>
+        <div>
+          <span>标准接口</span>
+          <strong>统一 JSON 契约，便于 Java 侧治理</strong>
+        </div>
+      </article>
+      <article class="trust-card">
+        <div class="icon-box">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 019 9c0 4.8-3.8 8.7-8.5 9v-2.1a6.9 6.9 0 006.4-6.9A6.9 6.9 0 0012 5.1 6.9 6.9 0 005.1 12c0 1.8.7 3.5 1.9 4.7l1.4-1.4v5.2H3.2l2.2-2.2A8.9 8.9 0 013 12a9 9 0 019-9zm-.8 4h1.6v5.1l4 2.4-.8 1.4-4.8-2.9V7z"/></svg>
+        </div>
+        <div>
+          <span>即时反馈</span>
+          <strong>真实上传链路与即时结果回传</strong>
+        </div>
+      </article>
+    </section>
+
+    <section class="ops-bar">
+      <div class="token-panel">
+        <label for="api-token">API Token</label>
+        <input id="api-token" type="text" value="{{ demo_token }}" placeholder="请输入 X-API-Token">
+      </div>
+      <div class="mini-card">
+        <span>请求入口</span>
+        <strong>/api/v1/*</strong>
+      </div>
+      <div class="mini-card">
+        <span>请求追踪</span>
+        <strong>X-Request-Id</strong>
+      </div>
+      <div class="mini-card">
+        <span>返回格式</span>
+        <strong>统一 JSON</strong>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <article class="summary-card accent">
+        <span class="summary-label">核心能力</span>
+        <strong>3 项算法动作</strong>
+        <p>人脸检测、身份核验、黑名单命中。前端作为可视化工作台，Python 服务作为算法引擎。</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">接入方式</span>
+        <strong>网关友好接入</strong>
+        <p>统一请求头、统一响应体、明确错误码，适合接入业务编排、审计与告警体系。</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">展示模式</span>
+        <strong>官网首页 + 操作控制台</strong>
+        <p>既有产品首页的品牌感，也保留后台联调所需的直接上传与原始结果输出。</p>
+      </article>
+    </section>
+
+    <section class="workspace-grid">
+      <article class="tool-panel">
+        <div class="panel-head">
+          <p class="panel-kicker">人脸检测</p>
+          <h2>1. 人脸检测</h2>
+          <p>上传单张图片，确认是否存在有效人脸，并返回检测框与人脸数量。</p>
+        </div>
+        <form class="tool-form" data-endpoint="/api/v1/detect-face">
+          <label>上传待检测图片</label>
+          <input type="file" name="image" accept="image/*" required>
+          <button type="submit">执行检测</button>
+        </form>
+        <div class="result-stage">
+          <div class="result-summary">等待执行...</div>
+          <img class="result-visual" alt="人脸检测结果图" hidden>
+          <details class="result-details">
+            <summary>查看原始 JSON</summary>
+            <pre class="result-box">等待执行...</pre>
+          </details>
+        </div>
+      </article>
+
+      <article class="tool-panel">
+        <div class="panel-head">
+          <p class="panel-kicker">身份核验</p>
+          <h2>2. 身份核验</h2>
+          <p>上传身份证正面照和人脸照片，返回相似度、阈值和核验结论。</p>
+        </div>
+        <form class="tool-form" data-endpoint="/api/v1/verify-identity">
+          <label>身份证正面照</label>
+          <input type="file" name="id_card_image" accept="image/*" required>
+          <label>人脸照片</label>
+          <input type="file" name="face_image" accept="image/*" required>
+          <button type="submit">执行核验</button>
+        </form>
+        <div class="result-stage">
+          <div class="result-summary">等待执行...</div>
+          <img class="result-visual" alt="身份核验结果图" hidden>
+          <details class="result-details">
+            <summary>查看原始 JSON</summary>
+            <pre class="result-box">等待执行...</pre>
+          </details>
+        </div>
+      </article>
+
+      <article class="tool-panel">
+        <div class="panel-head">
+          <p class="panel-kicker">黑名单比对</p>
+          <h2>3. 黑名单比对</h2>
+          <p>上传待检测人脸，与黑名单特征库比对，返回命中对象和相似度。</p>
+        </div>
+        <form class="tool-form" data-endpoint="/api/v1/check-blacklist">
+          <label>待检测人脸图片</label>
+          <input type="file" name="image" accept="image/*" required>
+          <button type="submit">执行比对</button>
+        </form>
+        <div class="result-stage">
+          <div class="result-summary">等待执行...</div>
+          <img class="result-visual" alt="黑名单比对结果图" hidden>
+          <details class="result-details">
+            <summary>查看原始 JSON</summary>
+            <pre class="result-box">等待执行...</pre>
+          </details>
+        </div>
+      </article>
+    </section>
+
+    <section class="workflow-grid">
+      <article class="workflow-card">
+        <span>01</span>
+        <strong>上传业务图片</strong>
+        <p>支持身份证正面照、现场人脸照和待筛查人脸图，页面直接发起 multipart 请求。</p>
+      </article>
+      <article class="workflow-card">
+        <span>02</span>
+        <strong>Python 服务推理</strong>
+        <p>执行检脸、特征提取、身份核验和黑名单比对，并输出结构化 JSON 与 request id。</p>
+      </article>
+      <article class="workflow-card">
+        <span>03</span>
+        <strong>Java 业务接管</strong>
+        <p>由 Java 后端完成权限控制、订单流转、存库、审计、监控和最终业务决策。</p>
+      </article>
+    </section>
+
+    <section class="footer-grid">
+      <div class="footer-card">
+        <span>页面说明</span>
+        <strong>当前页面用于算法演示，真实生产建议由 Java 后端统一鉴权、编排与存储。</strong>
+      </div>
+      <div class="footer-card">
+        <span>设计提示</span>
+        <strong>当前版本按 Figma 设计导向重做了视觉结构；运行站点仍由 Flask 模板直接渲染，方便继续联调与上线。</strong>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const tokenInput = document.getElementById('api-token');
+    const storedToken = localStorage.getItem('face-compare-token');
+    if (storedToken && !tokenInput.value) {
+      tokenInput.value = storedToken;
+    }
+
+    tokenInput.addEventListener('change', () => {
+      localStorage.setItem('face-compare-token', tokenInput.value.trim());
+    });
+
+    function renderSummary(form, data) {
+      const summary = form.parentElement.querySelector('.result-summary');
+      const visual = form.parentElement.querySelector('.result-visual');
+
+      if (data.data.face_detection) {
+        const item = data.data.face_detection;
+        summary.innerHTML = `
+          <div class="summary-head">
+            <span class="badge ${item.has_face ? 'success' : 'danger'}">${item.has_face ? '已检测到人脸' : '未检测到人脸'}</span>
+          </div>
+          <div class="summary-metrics">
+            <div><span>人脸数量</span><strong>${item.face_count}</strong></div>
+            <div><span>结果说明</span><strong>${item.message}</strong></div>
+          </div>
+        `;
+        visual.src = data.data.visualization_url;
+        visual.hidden = false;
+        return;
+      }
+
+      if (data.data.identity_verification) {
+        const item = data.data.identity_verification;
+        summary.innerHTML = `
+          <div class="summary-head">
+            <span class="badge ${item.verified ? 'success' : 'warn'}">${item.verified ? '核验通过' : '核验未通过'}</span>
+          </div>
+          <div class="summary-metrics">
+            <div><span>相似度</span><strong>${Number(item.similarity).toFixed(4)}</strong></div>
+            <div><span>阈值</span><strong>${Number(item.threshold).toFixed(4)}</strong></div>
+            <div><span>证件照人脸数</span><strong>${item.id_card_face_count}</strong></div>
+            <div><span>现场照人脸数</span><strong>${item.face_image_face_count}</strong></div>
+          </div>
+        `;
+        visual.src = data.data.visualization_url;
+        visual.hidden = false;
+        return;
+      }
+
+      if (data.data.blacklist_check) {
+        const item = data.data.blacklist_check;
+        summary.innerHTML = `
+          <div class="summary-head">
+            <span class="badge ${item.matched ? 'danger' : 'success'}">${item.matched ? '命中黑名单' : '未命中黑名单'}</span>
+          </div>
+          <div class="summary-metrics">
+            <div><span>命中对象</span><strong>${item.matched_name || '无'}</strong></div>
+            <div><span>相似度</span><strong>${Number(item.similarity).toFixed(4)}</strong></div>
+            <div><span>阈值</span><strong>${Number(item.threshold).toFixed(4)}</strong></div>
+          </div>
+        `;
+        visual.src = data.data.visualization_url;
+        visual.hidden = false;
+      }
+    }
+
+    async function submitForm(form) {
+      const resultBox = form.parentElement.querySelector('.result-box');
+      const summary = form.parentElement.querySelector('.result-summary');
+      const visual = form.parentElement.querySelector('.result-visual');
+      const endpoint = form.dataset.endpoint;
+      const body = new FormData(form);
+      const token = tokenInput.value.trim();
+      const requestId = `web-${Date.now()}`;
+
+      resultBox.textContent = '处理中...';
+      summary.textContent = '处理中...';
+      visual.hidden = true;
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'X-API-Token': token,
+            'X-Request-Id': requestId
+          },
+          body
+        });
+        const data = await response.json();
+        resultBox.textContent = JSON.stringify(data, null, 2);
+        if (data.success) {
+          renderSummary(form, data);
+        } else {
+          summary.innerHTML = `<span class="badge danger">请求失败</span><p>${data.message}</p>`;
+          visual.hidden = true;
+        }
+      } catch (error) {
+        resultBox.textContent = JSON.stringify({ success: false, message: String(error) }, null, 2);
+        summary.innerHTML = `<span class="badge danger">请求失败</span><p>${String(error)}</p>`;
+        visual.hidden = true;
+      }
+    }
+
+    document.querySelectorAll('.tool-form').forEach((form) => {
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        await submitForm(form);
+      });
+    });
+
+    document.getElementById('fill-samples').addEventListener('click', () => {
+      alert('建议使用示例文件：photos/34944_card_front.jpeg、photos/34944_face_photo_list.jpeg、blacklist/34944_face_photo_list.jpeg');
+    });
+  </script>
+</body>
+</html>

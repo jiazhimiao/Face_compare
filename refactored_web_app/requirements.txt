@@ -1,0 +1,7 @@
+flask
+numpy
+opencv-python
+insightface
+pillow
+scikit-learn
+pydantic

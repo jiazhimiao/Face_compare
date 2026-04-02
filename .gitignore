@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+
+.playwright-cli/
+
+aligned_face_imgs/
+features/
+original_face_imgs/
+output/
+
+refactored_web_app/__pycache__/
+refactored_web_app/.playwright-cli/
+refactored_web_app/runtime/

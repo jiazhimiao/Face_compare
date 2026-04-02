@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能人脸核验平台</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_v7.css', v='20260402v5100') }}">
+</head>
+<body>
+  <div class="platform-shell">
+    <header class="panel hero">
+      <div class="hero-main">
+        <p class="eyebrow">Face Compare Platform</p>
+        <h1>智能人脸核验平台</h1>
+        <p class="lead">提供人脸检测、身份核验与黑名单比对三项能力，支持上传图片并实时查看结果图、原图和结构化 JSON。</p>
+      </div>
+      <div class="hero-side">
+        <section class="token-card">
+          <label class="field" for="api-token">
+            <span>访问令牌</span>
+            <input id="api-token" type="text" value="{{ demo_token }}" placeholder="请输入 X-API-Token">
+          </label>
+          <p class="helper-text">浏览器会自动记住最近一次输入的 Token。</p>
+        </section>
+        <dl class="meta-list">
+          <div><dt>平台能力</dt><dd>3 项</dd></div>
+          <div><dt>接口路径</dt><dd>/api/v1/*</dd></div>
+          <div><dt>结果输出</dt><dd>结果图 / 原图 / JSON</dd></div>
+        </dl>
+      </div>
+    </header>
+
+    <main class="workspace">
+      {% for card in [
+        {
+          'id': 'detect',
+          'title': '人脸检测',
+          'tag': '能力 01',
+          'description': '上传单张图片，返回检测结论、人脸数量、结果图、原图与原始 JSON。',
+          'endpoint': '/api/v1/detect-face',
+          'button': '开始检测',
+          'fields': [('上传待检测图片', 'image')],
+          'primary_preview_label': '待检测图片',
+          'secondary_preview_label': '',
+          'empty_title': '等待上传检测图片',
+          'empty_text': '处理完成后，这里会显示结果图、原图与结构化结果。'
+        },
+        {
+          'id': 'verify',
+          'title': '身份核验',
+          'tag': '能力 02',
+          'description': '上传证件照和现场照，返回核验结论、相似度、阈值、结果图与原始 JSON。',
+          'endpoint': '/api/v1/verify-identity',
+          'button': '开始核验',
+          'fields': [('身份证正面照', 'id_card_image'), ('现场人脸照', 'face_image')],
+          'primary_preview_label': '身份证正面照',
+          'secondary_preview_label': '现场人脸照',
+          'empty_title': '等待上传证件照与现场照',
+          'empty_text': '处理完成后，这里会自动切换为双图结果视图。'
+        },
+        {
+          'id': 'blacklist',
+          'title': '黑名单比对',
+          'tag': '能力 03',
+          'description': '上传待比对图片，返回命中状态、参考图、结果图与原始 JSON。',
+          'endpoint': '/api/v1/check-blacklist',
+          'button': '开始比对',
+          'fields': [('上传待比对图片', 'image')],
+          'primary_preview_label': '待比对图片',
+          'secondary_preview_label': '命中参考图',
+          'empty_title': '等待上传待比对图片',
+          'empty_text': '处理完成后，这里会显示命中结果、参考图和结构化数据。'
+        }
+      ] %}
+      <section class="panel workflow-card" data-operation="{{ card.id }}">
+        <div class="workflow-head">
+          <div class="workflow-copy">
+            <span class="chip">{{ card.tag }}</span>
+            <h2>{{ card.title }}</h2>
+            <p>{{ card.description }}</p>
+          </div>
+        </div>
+
+        <div class="composer">
+          <form class="tool-form" data-endpoint="{{ card.endpoint }}" data-operation-title="{{ card.title }}">
+            <div class="field-grid">
+              {% for label, name in card.fields %}
+              <div class="field file-field">
+                <label class="field-label" for="{{ card.id }}-{{ name }}">{{ label }}</label>
+                <div class="file-input-shell">
+                  <span class="file-name" data-role="file-name">未选择文件</span>
+                  <input id="{{ card.id }}-{{ name }}" class="native-file-input" type="file" name="{{ name }}" accept="image/*" required>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            <div class="form-actions">
+              <button class="button primary submit-button" type="submit">{{ card.button }}</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="result-panel" data-role="result-panel">
+          <div class="result-banner state-neutral" data-role="result-banner">
+            <span class="status-pill neutral">空态</span>
+            <div>
+              <strong>{{ card.empty_title }}</strong>
+              <p>{{ card.empty_text }}</p>
+            </div>
+          </div>
+
+          <div class="result-grid">
+            <section class="subpanel media-subpanel">
+              <div class="subpanel-head">
+                <div class="subpanel-primary">
+                  <h3>结果视图</h3>
+                  <div class="media-tabs" role="tablist">
+                    <button class="tab-button is-active" type="button" data-tab-target="visual">结果图</button>
+                    <button class="tab-button" type="button" data-tab-target="source">原图</button>
+                  </div>
+                </div>
+                <div class="subpanel-actions">
+                  <a class="button ghost small result-open" href="#" target="_blank" rel="noreferrer" hidden data-role="open-result">打开结果图</a>
+                </div>
+              </div>
+              <div class="media-panel is-active" data-tab-panel="visual">
+                <div class="media-stage result-stage">
+                  <div class="visual-empty" data-role="visual-empty">{{ card.empty_text }}</div>
+                  <img class="result-visual" alt="{{ card.title }}结果图" hidden data-role="result-visual">
+                </div>
+              </div>
+              <div class="media-panel source-grid" data-tab-panel="source">
+                <figure class="preview-card" data-role="preview-primary">
+                  <figcaption>{{ card.primary_preview_label }}</figcaption>
+                  <div class="preview-media">
+                    <div class="preview-empty">等待上传</div>
+                    <img alt="{{ card.title }}原图 A" hidden>
+                  </div>
+                </figure>
+                <figure class="preview-card" data-role="preview-secondary" {% if not card.secondary_preview_label %}hidden{% endif %}>
+                  <figcaption>{{ card.secondary_preview_label or '补充图片' }}</figcaption>
+                  <div class="preview-media">
+                    <div class="preview-empty">{{ card.secondary_preview_label and '等待上传' or '当前功能仅需要一张图片' }}</div>
+                    <img alt="{{ card.title }}原图 B" hidden>
+                  </div>
+                </figure>
+              </div>
+            </section>
+
+            <section class="subpanel json-panel">
+              <details class="json-details">
+                <summary class="json-summary">
+                  <span>原始 JSON</span>
+                </summary>
+                <pre class="result-box" data-role="result-box">等待执行...</pre>
+              </details>
+            </section>
+          </div>
+        </div>
+      </section>
+      {% endfor %}
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='version_v7.js', v='20260402v5100') }}"></script>
+</body>
+</html>

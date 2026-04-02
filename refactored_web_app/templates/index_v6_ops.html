@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能人脸核验平台 5020</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_v6.css', v='20260402v') }}">
+</head>
+<body>
+  <div class="ops-shell">
+    <aside class="sidebar panel">
+      <div class="brand-block">
+        <p class="eyebrow">Face Compare Ops</p>
+        <h1>智能人脸核验平台</h1>
+        <p class="lead">5020 产品化迭代版。保留历史回溯入口，把当前工作区收敛为更适合演示、联调和内部交付的后台界面。</p>
+      </div>
+
+      <nav class="nav-stack">
+        <a class="nav-link is-current" href="{{ ui_versions.upgrade_port_5020 }}" target="_blank" rel="noreferrer">升级版 5020</a>
+        <a class="nav-link" href="{{ ui_versions.current_port_5014 }}" target="_blank" rel="noreferrer">冻结版 5014</a>
+        <a class="nav-link" href="{{ ui_versions.stable_port_5009 }}" target="_blank" rel="noreferrer">冻结版 5009</a>
+        <a class="nav-link" href="{{ ui_versions.current_port_5006 }}" target="_blank" rel="noreferrer">冻结版 5006</a>
+      </nav>
+
+      <section class="panel section-card">
+        <div class="section-title">
+          <span class="chip chip-blue">版本定位</span>
+          <h2>当前重点</h2>
+        </div>
+        <ul class="feature-list">
+          <li>稳定承接检测、核验、黑名单三条流程</li>
+          <li>突出结论、图像、原图、JSON 的清晰分层</li>
+          <li>保留 5006 / 5009 / 5014 对照入口</li>
+        </ul>
+      </section>
+
+      <section class="panel token-card">
+        <div class="section-title">
+          <span class="chip chip-slate">联调</span>
+          <h2>API Token</h2>
+        </div>
+        <label class="field">
+          <span>访问凭证</span>
+          <input id="api-token" type="text" value="{{ demo_token }}" placeholder="请输入 X-API-Token">
+        </label>
+        <p class="helper-text">浏览器会记住 Token，方便多轮演示与内部联调。</p>
+      </section>
+
+      <section class="panel section-card">
+        <div class="section-title">
+          <span class="chip chip-green">服务状态</span>
+          <h2>运行信息</h2>
+        </div>
+        <dl class="meta-list">
+          <div><dt>服务名</dt><dd>{{ service_name }}</dd></div>
+          <div><dt>版本</dt><dd>{{ service_version }}</dd></div>
+          <div><dt>环境</dt><dd>{{ service_env }}</dd></div>
+          <div><dt>接口</dt><dd>/api/v1/*</dd></div>
+        </dl>
+      </section>
+    </aside>
+
+    <div class="main-column">
+      <header class="topbar panel">
+        <div>
+          <p class="eyebrow">Control Center</p>
+          <h2>结果展示与核验工作区</h2>
+          <p class="lead compact">把人脸服务的三类能力收敛进统一后台壳层，优先保证信息层次、图片可读性和联调效率。</p>
+        </div>
+        <div class="topbar-actions">
+          <a class="button ghost" href="/api/v1/meta" target="_blank" rel="noreferrer">查看接口元信息</a>
+          <a class="button primary" href="{{ ui_versions.upgrade_port_5020 }}" target="_blank" rel="noreferrer">打开当前版本</a>
+        </div>
+      </header>
+
+      <main class="workspace">
+        {% for card in [
+          {
+            'id': 'detect',
+            'title': '人脸检测',
+            'tag': '功能 01',
+            'description': '上传单张图片，先做快速预检，输出结论、人脸数量、结果图、原图与原始 JSON。',
+            'endpoint': '/api/v1/detect-face',
+            'button': '开始检测',
+            'fields': [('上传待检测图片', 'image')],
+            'primary_preview_label': '待检测图片',
+            'secondary_preview_label': '',
+            'empty_title': '等待上传检测图片',
+            'empty_text': '结果区会在处理完成后显示检测结论、关键指标、结果图与原图。',
+            'tips': ['适合作为前置预检', '支持查看结构化 JSON']
+          },
+          {
+            'id': 'verify',
+            'title': '身份核验',
+            'tag': '功能 02',
+            'description': '上传证件照和现场照，清晰展示核验结论、相似度、阈值和双图结果。',
+            'endpoint': '/api/v1/verify-identity',
+            'button': '开始核验',
+            'fields': [('身份证正面照', 'id_card_image'), ('现场人脸照', 'face_image')],
+            'primary_preview_label': '身份证正面照',
+            'secondary_preview_label': '现场人脸照',
+            'empty_title': '等待上传证件照与现场照',
+            'empty_text': '结果区会在处理完成后自动切换为双图比对视图与指标卡片。',
+            'tips': ['适合联调阈值表现', '支持双图原图对照']
+          },
+          {
+            'id': 'blacklist',
+            'title': '黑名单比对',
+            'tag': '功能 03',
+            'description': '上传待比对图片，返回是否命中、相似度、命中对象和结果图。',
+            'endpoint': '/api/v1/check-blacklist',
+            'button': '开始比对',
+            'fields': [('上传待比对图片', 'image')],
+            'primary_preview_label': '待比对图片',
+            'secondary_preview_label': '命中参考图',
+            'empty_title': '等待上传待比对图片',
+            'empty_text': '结果区会在处理完成后展示命中状态、参考图与结构化 JSON。',
+            'tips': ['适合演示 1:N 对比', '支持命中对象预览']
+          }
+        ] %}
+        <section class="panel workflow-card" data-operation="{{ card.id }}">
+          <div class="workflow-head">
+            <div>
+              <span class="chip chip-blue">{{ card.tag }}</span>
+              <h3>{{ card.title }}</h3>
+              <p>{{ card.description }}</p>
+            </div>
+            <div class="tip-list" aria-label="功能特点">
+              {% for tip in card.tips %}
+              <span class="tip-pill">{{ tip }}</span>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="workflow-body">
+            <div class="composer">
+              <form class="tool-form" data-endpoint="{{ card.endpoint }}" data-operation-title="{{ card.title }}">
+                <div class="field-grid">
+                  {% for label, name in card.fields %}
+                  <div class="field file-field">
+                    <label class="field-label" for="{{ card.id }}-{{ name }}">{{ label }}</label>
+                    <div class="file-input-shell">
+                      <span class="file-trigger-visual">选择文件</span>
+                      <span class="file-name" data-role="file-name">未选择文件</span>
+                      <input id="{{ card.id }}-{{ name }}" class="native-file-input" type="file" name="{{ name }}" accept="image/*" required>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                <div class="form-actions">
+                  <button class="button primary submit-button" type="submit">{{ card.button }}</button>
+                  <span class="inline-status" data-role="inline-status">等待执行</span>
+                </div>
+              </form>
+            </div>
+
+            <div class="result-panel" data-role="result-panel">
+              <div class="result-banner state-empty" data-role="result-banner">
+                <span class="status-pill neutral">空态</span>
+                <div>
+                  <strong>{{ card.empty_title }}</strong>
+                  <p>{{ card.empty_text }}</p>
+                </div>
+              </div>
+
+              <div class="result-grid">
+                <section class="subpanel media-subpanel">
+                  <div class="subpanel-head">
+                    <div class="subpanel-primary">
+                      <h4>结果图与原图</h4>
+                      <div class="media-tabs" role="tablist">
+                        <button class="tab-button is-active" type="button" data-tab-target="visual">结果图</button>
+                        <button class="tab-button" type="button" data-tab-target="source">原图</button>
+                      </div>
+                    </div>
+                    <div class="subpanel-actions">
+                      <a class="button ghost small result-open" href="#" target="_blank" rel="noreferrer" hidden data-role="open-result">打开结果图</a>
+                    </div>
+                  </div>
+                  <div class="media-panel is-active" data-tab-panel="visual">
+                    <div class="media-stage result-stage">
+                      <div class="visual-empty" data-role="visual-empty">{{ card.empty_text }}</div>
+                      <img class="result-visual" alt="{{ card.title }}结果图" hidden data-role="result-visual">
+                    </div>
+                  </div>
+                  <div class="media-panel source-grid" data-tab-panel="source">
+                    <figure class="preview-card" data-role="preview-primary">
+                      <figcaption>{{ card.primary_preview_label }}</figcaption>
+                      <div class="preview-media">
+                        <div class="preview-empty">等待上传</div>
+                        <img alt="{{ card.title }}原图 A" hidden>
+                      </div>
+                    </figure>
+                    <figure class="preview-card" data-role="preview-secondary" {% if not card.secondary_preview_label %}hidden{% endif %}>
+                      <figcaption>{{ card.secondary_preview_label or '补充图片' }}</figcaption>
+                      <div class="preview-media">
+                        <div class="preview-empty">{{ card.secondary_preview_label and '等待上传' or '当前功能仅需要一张图片' }}</div>
+                        <img alt="{{ card.title }}原图 B" hidden>
+                      </div>
+                    </figure>
+                  </div>
+                </section>
+
+                <section class="subpanel json-panel">
+                  <details class="json-details">
+                    <summary class="json-summary">
+                      <span>原始 JSON</span>
+                    </summary>
+                    <pre class="result-box" data-role="result-box">等待执行...</pre>
+                  </details>
+                </section>
+              </div>
+            </div>
+          </div>
+        </section>
+        {% endfor %}
+      </main>
+    </div>
+
+    <aside class="rightbar">
+      <section class="panel brief-card">
+        <div class="section-title">
+          <span class="chip chip-amber">实时摘要</span>
+          <h2>最近一次处理</h2>
+        </div>
+        <div class="brief-state" id="brief-state">
+          <strong>尚未开始</strong>
+          <p>提交任一功能后，这里会展示最新请求的状态、耗时和核心结论。</p>
+        </div>
+      </section>
+
+      <section class="panel brief-card">
+        <div class="section-title">
+          <span class="chip chip-slate">布局原则</span>
+          <h2>阅读顺序</h2>
+        </div>
+        <ol class="rule-list">
+          <li>先结论，后指标，再看图片。</li>
+          <li>原图与结果图并行回看，JSON 放在最后。</li>
+          <li>新版本独立演进，历史版本随时回溯。</li>
+        </ol>
+      </section>
+
+      <section class="panel brief-card">
+        <div class="section-title">
+          <span class="chip chip-green">验证清单</span>
+          <h2>交付关注点</h2>
+        </div>
+        <ul class="feature-list compact-list">
+          <li>中文界面与结果图渲染稳定</li>
+          <li>上传后状态变化足够明确</li>
+          <li>图像与容器边界关系清晰</li>
+          <li>桌面端和移动端都可完整查看</li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <script src="{{ url_for('static', filename='version_v6.js', v='20260402v') }}"></script>
+</body>
+</html>

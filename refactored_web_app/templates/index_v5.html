@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能人脸核验平台 V5</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_v5.css') }}">
+</head>
+<body>
+  <div class="v5-shell">
+    <header class="header-card">
+      <div>
+        <p class="brand-mark">FACE VERIFY PLATFORM</p>
+        <h1>智能人脸核验平台</h1>
+        <p class="subtitle">蓝白主题的交付版工作台，保留核心能力，减少干扰信息，适合演示与交付。</p>
+      </div>
+      <div class="header-actions">
+        <a href="http://127.0.0.1:5014" target="_blank" rel="noreferrer">当前版 5014</a>
+        <a href="http://127.0.0.1:5009" target="_blank" rel="noreferrer">稳定版 5009</a>
+        <a href="http://127.0.0.1:5006" target="_blank" rel="noreferrer">早期版 5006</a>
+      </div>
+    </header>
+
+    <section class="overview-grid">
+      <article class="overview-card emphasis">
+        <span>当前版本</span>
+        <strong>V5 交付版</strong>
+        <p>更柔和的圆角、蓝白配色、纵向功能编排。</p>
+      </article>
+      <article class="overview-card">
+        <span>服务</span>
+        <strong>{{ service_name }}</strong>
+        <p>{{ service_version }} / {{ service_env }}</p>
+      </article>
+      <article class="overview-card token-card">
+        <label for="api-token">API Token</label>
+        <input id="api-token" type="text" value="{{ demo_token }}" placeholder="请输入 X-API-Token">
+      </article>
+    </section>
+
+    <section class="capability-stack">
+      <article class="capability-card">
+        <div class="card-head">
+          <div>
+            <span class="card-tag">功能 01</span>
+            <h2>人脸检测</h2>
+          </div>
+          <a class="meta-link" href="/api/v1/meta" target="_blank" rel="noreferrer">接口元信息</a>
+        </div>
+        <p class="card-copy">上传单张图片，判断是否检测到有效人脸，并返回结果图与结构化结果。</p>
+        <form class="tool-form" data-endpoint="/api/v1/detect-face">
+          <label>上传待检测图片</label>
+          <input type="file" name="image" accept="image/*" required>
+          <button type="submit">开始检测</button>
+        </form>
+        <div class="result-area">
+          <div class="result-summary">等待执行...</div>
+          <div class="result-actions">
+            <a class="result-open" href="#" target="_blank" rel="noreferrer" hidden>查看原图</a>
+          </div>
+          <div class="visual-empty">检测完成后，这里会展示结果图</div>
+          <img class="result-visual" alt="人脸检测结果图" hidden>
+          <details class="result-details">
+            <summary>查看原始 JSON</summary>
+            <pre class="result-box">等待执行...</pre>
+          </details>
+        </div>
+      </article>
+
+      <article class="capability-card">
+        <div class="card-head">
+          <div>
+            <span class="card-tag">功能 02</span>
+            <h2>身份核验</h2>
+          </div>
+        </div>
+        <p class="card-copy">上传证件照和现场照，返回相似度、阈值、核验结论，并附带结果图。</p>
+        <form class="tool-form" data-endpoint="/api/v1/verify-identity">
+          <label>身份证正面照</label>
+          <input type="file" name="id_card_image" accept="image/*" required>
+          <label>现场人脸照</label>
+          <input type="file" name="face_image" accept="image/*" required>
+          <button type="submit">开始核验</button>
+        </form>
+        <div class="result-area">
+          <div class="result-summary">等待执行...</div>
+          <div class="result-actions">
+            <a class="result-open" href="#" target="_blank" rel="noreferrer" hidden>查看原图</a>
+          </div>
+          <div class="visual-empty">核验完成后，这里会展示结果图</div>
+          <img class="result-visual" alt="身份核验结果图" hidden>
+          <details class="result-details">
+            <summary>查看原始 JSON</summary>
+            <pre class="result-box">等待执行...</pre>
+          </details>
+        </div>
+      </article>
+
+      <article class="capability-card">
+        <div class="card-head">
+          <div>
+            <span class="card-tag">功能 03</span>
+            <h2>黑名单比对</h2>
+          </div>
+        </div>
+        <p class="card-copy">上传待检测图片，与黑名单特征库做 1:N 比对，输出命中结果与结果图。</p>
+        <form class="tool-form" data-endpoint="/api/v1/check-blacklist">
+          <label>上传待比对图片</label>
+          <input type="file" name="image" accept="image/*" required>
+          <button type="submit">开始比对</button>
+        </form>
+        <div class="result-area">
+          <div class="result-summary">等待执行...</div>
+          <div class="result-actions">
+            <a class="result-open" href="#" target="_blank" rel="noreferrer" hidden>查看原图</a>
+          </div>
+          <div class="visual-empty">比对完成后，这里会展示结果图</div>
+          <img class="result-visual" alt="黑名单比对结果图" hidden>
+          <details class="result-details">
+            <summary>查看原始 JSON</summary>
+            <pre class="result-box">等待执行...</pre>
+          </details>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <script>
+    const tokenInput = document.getElementById('api-token');
+    const storedToken = localStorage.getItem('face-compare-token');
+    if (storedToken && !tokenInput.value) {
+      tokenInput.value = storedToken;
+    }
+
+    tokenInput.addEventListener('change', () => {
+      localStorage.setItem('face-compare-token', tokenInput.value.trim());
+    });
+
+    function metric(label, value) {
+      return `<div class="metric"><span>${label}</span><strong>${value}</strong></div>`;
+    }
+
+    function renderSummary(form, payload) {
+      const summary = form.parentElement.querySelector('.result-summary');
+      const visual = form.parentElement.querySelector('.result-visual');
+      const openLink = form.parentElement.querySelector('.result-open');
+      const emptyState = form.parentElement.querySelector('.visual-empty');
+      const data = payload.data;
+
+      if (data.face_detection) {
+        const item = data.face_detection;
+        summary.innerHTML = `
+          <div class="summary-head">
+            <span class="badge ${item.has_face ? 'success' : 'danger'}">${item.has_face ? '检测到人脸' : '未检测到人脸'}</span>
+          </div>
+          <div class="metrics-grid">
+            ${metric('人脸数量', item.face_count)}
+            ${metric('结果说明', item.message)}
+          </div>
+        `;
+      }
+
+      if (data.identity_verification) {
+        const item = data.identity_verification;
+        summary.innerHTML = `
+          <div class="summary-head">
+            <span class="badge ${item.verified ? 'success' : 'warn'}">${item.verified ? '核验通过' : '核验未通过'}</span>
+          </div>
+          <div class="metrics-grid">
+            ${metric('相似度', Number(item.similarity).toFixed(4))}
+            ${metric('阈值', Number(item.threshold).toFixed(4))}
+            ${metric('证件照人脸数', item.id_card_face_count)}
+            ${metric('现场照人脸数', item.face_image_face_count)}
+          </div>
+        `;
+      }
+
+      if (data.blacklist_check) {
+        const item = data.blacklist_check;
+        summary.innerHTML = `
+          <div class="summary-head">
+            <span class="badge ${item.matched ? 'danger' : 'success'}">${item.matched ? '命中黑名单' : '未命中黑名单'}</span>
+          </div>
+          <div class="metrics-grid">
+            ${metric('命中对象', item.matched_name || '无')}
+            ${metric('相似度', Number(item.similarity).toFixed(4))}
+            ${metric('阈值', Number(item.threshold).toFixed(4))}
+          </div>
+        `;
+      }
+
+      if (data.visualization_url) {
+        visual.src = `${data.visualization_url}?t=${Date.now()}`;
+        visual.hidden = false;
+        emptyState.hidden = true;
+        openLink.href = data.visualization_url;
+        openLink.hidden = false;
+      }
+    }
+
+    async function submitForm(form) {
+      const resultBox = form.parentElement.querySelector('.result-box');
+      const summary = form.parentElement.querySelector('.result-summary');
+      const visual = form.parentElement.querySelector('.result-visual');
+      const openLink = form.parentElement.querySelector('.result-open');
+      const emptyState = form.parentElement.querySelector('.visual-empty');
+      const endpoint = form.dataset.endpoint;
+      const body = new FormData(form);
+      const token = tokenInput.value.trim();
+      const requestId = `web-${Date.now()}`;
+
+      resultBox.textContent = '处理中...';
+      summary.textContent = '处理中...';
+      visual.hidden = true;
+      visual.removeAttribute('src');
+      openLink.hidden = true;
+      emptyState.hidden = false;
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'X-API-Token': token,
+            'X-Request-Id': requestId
+          },
+          body
+        });
+        const data = await response.json();
+        resultBox.textContent = JSON.stringify(data, null, 2);
+        if (data.success) {
+          renderSummary(form, data);
+        } else {
+          summary.innerHTML = `<span class="badge danger">请求失败</span><p class="error-copy">${data.message}</p>`;
+        }
+      } catch (error) {
+        resultBox.textContent = String(error);
+        summary.innerHTML = `<span class="badge danger">请求异常</span><p class="error-copy">${String(error)}</p>`;
+      }
+    }
+
+    document.querySelectorAll('.tool-form').forEach((form) => {
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        submitForm(form);
+      });
+    });
+  </script>
+</body>
+</html>

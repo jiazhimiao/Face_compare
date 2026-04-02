@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能人脸核验平台 5014</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_v5.css') }}">
+</head>
+<body>
+  <div class="v5-shell">
+    <header class="header-card">
+      <div>
+        <p class="brand-mark">FACE VERIFY PLATFORM</p>
+        <h1>智能人脸核验平台</h1>
+        <p class="subtitle">5014 固化版。蓝白主题、圆角化界面、纵向三功能工作流。</p>
+      </div>
+      <div class="header-actions">
+        <a href="{{ ui_versions.current_port_5014 }}" target="_blank" rel="noreferrer">当前版 5014</a>
+        <a href="{{ ui_versions.stable_port_5009 }}" target="_blank" rel="noreferrer">稳定版 5009</a>
+        <a href="{{ ui_versions.current_port_5006 }}" target="_blank" rel="noreferrer">早期版 5006</a>
+      </div>
+    </header>
+
+    <section class="overview-grid">
+      <article class="overview-card emphasis">
+        <span>版本</span>
+        <strong>5014 固化版</strong>
+        <p>蓝白配色与结果图主题一致，用于保留当前最新设计方向。</p>
+      </article>
+      <article class="overview-card">
+        <span>服务</span>
+        <strong>{{ service_name }}</strong>
+        <p>{{ service_version }} / {{ service_env }}</p>
+      </article>
+      <article class="overview-card token-card">
+        <label for="api-token">API Token</label>
+        <input id="api-token" type="text" value="{{ demo_token }}" placeholder="请输入 X-API-Token">
+      </article>
+    </section>
+
+    <section class="capability-stack">
+      {% for title, endpoint, fields, empty_text in [
+        ('人脸检测','/api/v1/detect-face',[('上传待检测图片','image')],'检测完成后，这里会展示结果图'),
+        ('身份核验','/api/v1/verify-identity',[('身份证正面照','id_card_image'),('现场人脸照','face_image')],'核验完成后，这里会展示结果图'),
+        ('黑名单比对','/api/v1/check-blacklist',[('上传待比对图片','image')],'比对完成后，这里会展示结果图')
+      ] %}
+      <article class="capability-card">
+        <div class="card-head">
+          <div>
+            <span class="card-tag">功能 {{ "%02d"|format(loop.index) }}</span>
+            <h2>{{ title }}</h2>
+          </div>
+        </div>
+        <p class="card-copy">上传图片后，平台会返回结构化结果与蓝白风格结果图。</p>
+        <form class="tool-form" data-endpoint="{{ endpoint }}">
+          {% for label, name in fields %}
+          <label>{{ label }}</label>
+          <input type="file" name="{{ name }}" accept="image/*" required>
+          {% endfor %}
+          <button type="submit">开始处理</button>
+        </form>
+        <div class="result-area">
+          <div class="result-summary">等待执行...</div>
+          <div class="result-actions">
+            <a class="result-open" href="#" target="_blank" rel="noreferrer" hidden>查看原图</a>
+          </div>
+          <div class="visual-empty">{{ empty_text }}</div>
+          <img class="result-visual" alt="{{ title }}结果图" hidden>
+          <details class="result-details">
+            <summary>查看原始 JSON</summary>
+            <pre class="result-box">等待执行...</pre>
+          </details>
+        </div>
+      </article>
+      {% endfor %}
+    </section>
+  </div>
+
+  {% include "_version_common_script.html" %}
+</body>
+</html>
